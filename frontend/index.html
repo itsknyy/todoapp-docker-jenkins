@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>todos</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f2ed;
+      --ink: #1a1814;
+      --muted: #9c9890;
+      --accent: #c8432a;
+      --line: #ddd9d2;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 80px 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      margin-bottom: 52px;
+    }
+
+    .label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 42px;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      border-bottom: 1.5px solid var(--ink);
+      padding-bottom: 10px;
+      margin-bottom: 40px;
+      gap: 12px;
+    }
+
+    .input-row input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      color: var(--ink);
+      font-weight: 300;
+    }
+
+    .input-row input::placeholder {
+      color: var(--muted);
+    }
+
+    .add-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      padding: 0;
+      transition: color 0.15s ease, transform 0.15s ease;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .add-btn:hover {
+      color: var(--accent);
+      transform: rotate(45deg);
+    }
+
+    #todoList {
+      list-style: none;
+    }
+
+    #todoList li {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      animation: slideIn 0.25s ease both;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--ink);
+      cursor: default;
+      transition: color 0.2s;
+    }
+
+    #todoList li:hover {
+      color: var(--accent);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .todo-num {
+      font-size: 10px;
+      color: var(--muted);
+      min-width: 20px;
+      font-style: italic;
+    }
+
+    .todo-text {
+      flex: 1;
+    }
+
+    /* ---- CHANGED: delete button ---- */
+    .del-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 18px;
+      font-family: 'DM Mono', monospace;
+      padding: 0;
+      line-height: 1;
+      opacity: 0;
+      transition: opacity 0.15s ease, color 0.15s ease;
+    }
+
+    #todoList li:hover .del-btn {
+      opacity: 1;
+      color: var(--accent);
+    }
+    /* -------------------------------- */
+
+    .empty {
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+      padding: 20px 0;
+    }
+
+    footer {
+      margin-top: 48px;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <p class="label">your list</p>
+      <h1>things<br>to <em>do.</em></h1>
+    </header>
+
+    <div class="input-row">
+      <input type="text" id="taskInput" placeholder="add something..." autocomplete="off" />
+      <button class="add-btn" onclick="addTodo()" title="Add">+</button>
+    </div>
+
+    <ul id="todoList"></ul>
+
+    <footer>press enter or + to add · hover to delete</footer>
+  </div>
+
+  <script>
+    const API = "http://52.206.53.110:5000";
+
+    async function fetchTodos() {
+      try {
+        const res = await fetch(`${API}/todos`);
+        const todos = await res.json();
+        const list = document.getElementById("todoList");
+        list.innerHTML = "";
+
+        if (todos.length === 0) {
+          list.innerHTML = '<li class="empty" style="border:none">nothing here yet.</li>';
+          return;
+        }
+
+        todos.forEach((todo, i) => {
+          const li = document.createElement("li");
+          li.style.animationDelay = `${i * 0.05}s`;
+          li.innerHTML = `
+            <span class="todo-num">0${i + 1}</span>
+            <span class="todo-text">${todo.task}</span>
+            <button class="del-btn" onclick="deleteTodo(${todo.id})" title="Delete">×</button>
+          `;
+          list.appendChild(li);
+        });
+      } catch (e) {
+        document.getElementById("todoList").innerHTML =
+          '<li class="empty" style="border:none">couldn\'t reach the server.</li>';
+      }
+    }
+
+    async function addTodo() {
+      const input = document.getElementById("taskInput");
+      const task = input.value.trim();
+      if (!task) return;
+      try {
+        await fetch(`${API}/todos`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task })
+        });
+        input.value = "";
+        fetchTodos();
+      } catch (e) {
+        console.error("Failed to add todo");
+      }
+    }
+
+    /* ---- CHANGED: delete function ---- */
+    async function deleteTodo(id) {
+      try {
+        await fetch(`${API}/todos/${id}`, { method: "DELETE" });
+        fetchTodos();
+      } catch (e) {
+        console.error("Failed to delete todo");
+      }
+    }
+    /* ---------------------------------- */
+
+    document.getElementById("taskInput").addEventListener("keydown", e => {
+      if (e.key === "Enter") addTodo();
+    });
+
+    fetchTodos();
+  </script>
+</body>
+</html>
