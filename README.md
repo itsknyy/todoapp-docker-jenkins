@@ -1,6 +1,4 @@
-# 🚀 Dockerized Application with CI/CD on AWS EC2
-
-# 📌 Project Overview
+# 📌 Dockerized Application with CI/CD on AWS EC2
 
 This project demonstrates a complete CI/CD pipeline for a containerized full-stack Todo application deployed on AWS EC2.
 
