@@ -23,30 +23,30 @@ Instead of using `latest` image tags, this project implements build-number versi
 
 # 🧠 Concepts Demonstrated
 
-## 1️⃣ Containerization (Docker)
+**1️⃣ Containerization (Docker)**
 - Writing Dockerfiles
 - Building and tagging images
 
-## 2️⃣ Multi-Container Architecture
+**2️⃣ Multi-Container Architecture**
 - Frontend container
 - Backend container
 - PostgreSQL database
 - Persistent volumes
 
-## 3️⃣ CI (Continuous Integration)
+**3️⃣ CI (Continuous Integration)**
 Handled by Jenkins:
 - Pull code from GitHub
 - Build Docker images
 - Tag images with BUILD_NUMBER
 - Push images to Docker Hub
 
-## 4️⃣ CD (Continuous Deployment)
+**4️⃣ CD (Continuous Deployment)**
 Handled via Jenkins SSH to EC2:
 - Pull specific version from Docker Hub
 - Run docker compose with APP_VERSION
 - Update running containers automatically
 
-## 5️⃣ Versioning Strategy
+**5️⃣ Versioning Strategy**
 Images are tagged using Jenkins BUILD_NUMBER:
 - todoapp-backend:1
 - todoapp-backend:2
@@ -79,18 +79,18 @@ todo-app/
 ```
 # 🛠 Prerequisites
 
-## 1️⃣ Accounts Required
+**1️⃣ Accounts Required**
 - AWS Account
 - Docker Hub Account
 - GitHub Account
 
-## 2️⃣ Local Setup
+**2️⃣ Local Setup**
 - Git
 - Docker
 - Jenkins (running locally)
 - SSH configured
 
-## 3️⃣ EC2 Requirements
+**3️⃣ EC2 Requirements**
 - Ubuntu 22.04
 - Ports open:
   - 22 (SSH)
